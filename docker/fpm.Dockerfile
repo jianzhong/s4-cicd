@@ -11,6 +11,7 @@ RUN apk add --update --no-cache \
         icu-dev \
         zlib-dev \
         git \
+        less \
         bash \
         yarn \
         tree \

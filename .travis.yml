@@ -7,6 +7,7 @@ services:
 
 before_install:
   - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.Dockerfile docker/.
+  - docker container run --rm -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git:latest symfony composer install
   
 script:
   - docker container run --rm -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git:latest bin/phpunit
