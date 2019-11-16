@@ -9,28 +9,28 @@ jobs:
   include:
     - stage: test
       before_install:
-        - docker build -t jianzhong/cicd_fpm -f docker/fpm.Dockerfile docker/.
-        - docker-compose -p cicd -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d 
+        - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.dev.Dockerfile docker/.
+        - docker-compose -p cicd -f docker/docker-compose.yml up -d 
       install:
         - docker container exec cicd_php_1 run symfony composer install
       script:
-        - docker container exec -v $(pwd):/var/www/app jianzhong/cicd:latest bin/phpunit
+        - docker container exec -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git bin/phpunit
       after_script:
-        - docker-compose down -f docker/docker-compose.yml -f docker/docker-compose.override.yml
+        - docker-compose down -f docker/docker-compose.yml
         - docker system prune -a -f --volumes
     - stage: deploy
       before_install:
-        - docker build -t jianzhong/cicd_fpm -f docker/fpm-prod.Dockerfile docker/.
-        - docker build -t jianzhong/cicd_nginx -f docker/nginx-prod.Dockerfile docker/.
+        - docker build -t jianzhong/s4-cicd-fpm-prod -f docker/fpm.prod.Dockerfile .
+        - docker build -t jianzhong/s4-cicd-nginx-prod -f docker/nginx.prod.Dockerfile docker
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker push jianzhong/cicd_fpm
-        - docker push jianzhong/cicd_nginx
-        - scp composer files to swarm master node in production server cluster
-        - ssh into swarm master node in production server cluster
-        - docker pull jianzhong/cicd_php_fpm:latest
-        - docker pull jianzhong/cicd_php_nginx:latest
-      install:
-        - docker stack deploy -c compose-file.yaml
+        - docker push jianzhong/s4-cicd-fpm-prod
+        - docker push jianzhong/s4-cicd-nginx-prod
+        #- scp docker/stack-composer files to swarm master node in production server cluster
+        #- ssh into swarm master node in production server cluster
+        #- docker pull jianzhong/s4-cicd-fpm-prod:latest
+        #- docker pull jianzhong/s4-cicd-nginx-prod:latest
+      #install:
+      #  - docker stack deploy -c stack-compose.yaml
 stages:
   - name: test
     # require the type to be a PR

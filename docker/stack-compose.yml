@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  web:
+    image: jianzhong/s4-cicd-nginx-prod:latest
+    ports:
+      - 80:80
+    networks:
+      - web_net
+    depends_on:
+      - php
+  php:
+    environment:
+      - GITHUB_USER_NAME=${GITHUB_USER_NAME}
+      - GITHUB_USER_EMAIL=${GITHUB_USER_EMAIL}
+      - APP_ENV=prod
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=5.7
+    image: jianzhong/s4-cicd-fpm-prod:latest
+    networks:
+      - web_net
+      - data_net
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - db_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - data_net
+
+volumes:
+  db_volume:
+
+networks:
+  web_net:
+  data_net:
+  
