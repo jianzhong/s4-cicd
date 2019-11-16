@@ -19,7 +19,7 @@ jobs:
       after_script:
         - docker-compose down -f docker/docker-compose.yml
         - docker system prune -a -f --volumes
-    - stage: deploy
+    - stage: test2
       if: branch = master
       before_install:
         - docker build -t jianzhong/s4-cicd-fpm-prod -f docker/fpm.prod.Dockerfile .
