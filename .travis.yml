@@ -8,6 +8,7 @@ services:
 jobs:
   include:
     - stage: test
+      if: type = pull_request
       before_install:
         - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.dev.Dockerfile docker/.
         - docker-compose -f docker/docker-compose.yml up -d 
@@ -19,6 +20,7 @@ jobs:
         - docker-compose down -f docker/docker-compose.yml
         - docker system prune -a -f --volumes
     - stage: deploy
+      if: branch = "master" AND type = push
       before_install:
         - docker build -t jianzhong/s4-cicd-fpm-prod -f docker/fpm.prod.Dockerfile .
         - docker build -t jianzhong/s4-cicd-nginx-prod -f docker/nginx.prod.Dockerfile docker
@@ -32,10 +34,3 @@ jobs:
       install:
         - docker system prune -a -f --volumes
       #  - docker stack deploy -c stack-compose.yaml
-stages:
-  - name: test
-    # require the type to be a PR
-    if: type = pull_request
-  - name: deploy
-    # require the type to be push to master
-    if: type = push AND branch = master
