@@ -31,6 +31,6 @@ jobs:
         #- ssh into swarm master node in production server cluster
         #- docker pull jianzhong/s4-cicd-fpm-prod:latest
         #- docker pull jianzhong/s4-cicd-nginx-prod:latest
-      install:
+      script:
         - docker system prune -a -f --volumes
       #  - docker stack deploy -c stack-compose.yaml
