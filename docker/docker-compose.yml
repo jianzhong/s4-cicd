@@ -20,7 +20,7 @@ services:
       - GITHUB_USER_NAME=${GITHUB_USER_NAME}
       - GITHUB_USER_EMAIL=${GITHUB_USER_EMAIL}
       - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=5.7
-    image: jianzhong/cicd_fpm
+    image: jianzhong/php7_fpm_symfony4_git
     container_name: cicd-php-1
     volumes:
       - ..:/var/www/app
