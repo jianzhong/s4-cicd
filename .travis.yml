@@ -19,8 +19,8 @@ jobs:
       after_script:
         - docker-compose down -f docker/docker-compose.yml
         - docker system prune -a -f --volumes
-    - stage: "deploy-test"
-      if: branch = master
+    - stage: "deploy test"
+      if: branch = master AND type = push
       before_install:
         - docker build -t jianzhong/s4-cicd-fpm-prod -f docker/fpm.prod.Dockerfile .
         - docker build -t jianzhong/s4-cicd-nginx-prod -f docker/nginx.prod.Dockerfile docker
