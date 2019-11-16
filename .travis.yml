@@ -1,13 +1,40 @@
 sudo: required
 
-language: php
+#language: php
 
 services: 
   - docker
 
-before_install:
-  - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.Dockerfile docker/.
-  - docker container run --rm -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git:latest symfony composer install
-  
-script:
-  - docker container run --rm -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git:latest bin/phpunit
+jobs:
+  include:
+    - stage: test
+      before_install:
+        - docker build -t jianzhong/cicd_fpm -f docker/fpm.Dockerfile docker/.
+        - docker-compose -p cicd -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d 
+      install:
+        - docker container exec cicd_php_1 run symfony composer install
+      script:
+        - docker container exec -v $(pwd):/var/www/app jianzhong/cicd:latest bin/phpunit
+      after_script:
+        - docker-compose down -f docker/docker-compose.yml -f docker/docker-compose.override.yml
+        - docker system prune -a -f --volumes
+    - stage: deploy
+      before_install:
+        - docker build -t jianzhong/cicd_fpm -f docker/fpm-prod.Dockerfile docker/.
+        - docker build -t jianzhong/cicd_nginx -f docker/nginx-prod.Dockerfile docker/.
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push jianzhong/cicd_fpm
+        - docker push jianzhong/cicd_nginx
+        - scp composer files to swarm master node in production server cluster
+        - ssh into swarm master node in production server cluster
+        - docker pull jianzhong/cicd_php_fpm:latest
+        - docker pull jianzhong/cicd_php_nginx:latest
+      install:
+        - docker stack deploy -c compose-file.yaml
+stages:
+  - name: test
+    # require the type to be a PR
+    if: type = pull_request
+  - name: deploy
+    # require the type to be push to master
+    if: type = push AND branch = master
