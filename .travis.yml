@@ -12,7 +12,7 @@ jobs:
         - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.dev.Dockerfile docker/.
         - docker-compose -f docker/docker-compose.yml up -d 
       install:
-        - docker container exec cicd-php-1 run symfony composer install
+        - docker container exec cicd-php-1 symfony composer install
       script:
         - docker container exec cicd-php-1 bin/phpunit
       after_script:
