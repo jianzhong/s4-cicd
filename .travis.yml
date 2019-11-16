@@ -27,10 +27,12 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
         - docker push jianzhong/s4-cicd-fpm-prod
         - docker push jianzhong/s4-cicd-nginx-prod
+      install: skip
         #- scp docker/stack-composer files to swarm master node in production server cluster
         #- ssh into swarm master node in production server cluster
         #- docker pull jianzhong/s4-cicd-fpm-prod:latest
         #- docker pull jianzhong/s4-cicd-nginx-prod:latest
       script:
         - docker system prune -a -f --volumes
-      #  - docker stack deploy -c stack-compose.yaml
+      deploy: skip
+        #- docker stack deploy -c stack-compose.yaml
