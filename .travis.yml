@@ -10,11 +10,11 @@ jobs:
     - stage: test
       before_install:
         - docker build -t jianzhong/php7_fpm_symfony4_git -f docker/fpm.dev.Dockerfile docker/.
-        - docker-compose -p cicd -f docker/docker-compose.yml up -d 
+        - docker-compose -f docker/docker-compose.yml up -d 
       install:
-        - docker container exec cicd_php_1 run symfony composer install
+        - docker container exec cicd-php-1 run symfony composer install
       script:
-        - docker container exec -v $(pwd):/var/www/app jianzhong/php7_fpm_symfony4_git bin/phpunit
+        - docker container exec cicd-php-1 bin/phpunit
       after_script:
         - docker-compose down -f docker/docker-compose.yml
         - docker system prune -a -f --volumes
